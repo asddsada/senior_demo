@@ -1,0 +1,14 @@
+#addButton{
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    right: 4%;
+    top: 2%;
+    position: absolute;
+    font-weight: bold;
+    font-size: 20px;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0;
+    float: right;
+}
