@@ -1,15 +1,44 @@
-#recorder{
-    position: absolute;
-    top: 10%;
-    left: 20%;
-    width: 80%;
-    height: 60%;
+#dialog{
+    color: #675fb0;
+    position: relative;
+    margin: 5vh 10vw;
+    width: 40vw;
+    padding: 5vh 10vw 10vh 10vw;
+    height: 40vh;
+    top: 0;
+    border-radius: 2%;
+    text-align: center;
+    font-size: 2vh;
+    margin: 20vh 20vw 25vh 20vw;
+    border: #9189d9 solid 2px;
 }
 
 .sound-wave {
-    width: 80%;
+    /* width: 80%;
     position: relative;
     margin: 10% 10% 2% 10%;
     height: 60%;
-    vertical-align: middle;
+    vertical-align: middle; */
+    display: none;
+}
+
+.next {
+    bottom: 25vh;
+    right: 20vw;
+    position: fixed;
+}
+
+.record {
+    border-radius: 50%;
+    padding: 10vh 8vh;
+    font-size: 4vh;
+}
+
+.record.active {
+    background-color:#82001c;
+}
+
+.record:hover, 
+.record:active{
+    background-color:#db0f3b;
 }

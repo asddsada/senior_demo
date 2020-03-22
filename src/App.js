@@ -1,15 +1,11 @@
 import React from 'react';
 import './App.css';
-import RegisterEnrollment from './components/RegisterEnrollment.js'
-import EnrollmentList from './components/EnrollmentList.js'
-import MainScreen from './components/MainScreen.js'
+import Recorder from './components/Recorder.js'
 
 function App() {
   return (
     <div className="App">
-      <EnrollmentList />
-      <RegisterEnrollment />
-      <MainScreen/>
+      <Recorder/>
     </div>
   );
 }
