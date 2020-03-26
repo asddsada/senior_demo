@@ -24,4 +24,4 @@ yarn-error.log*
 
 backend/result.txt
 backend/speaker.txt
-backend/demo_audio/
+backend/demo_pipeline/

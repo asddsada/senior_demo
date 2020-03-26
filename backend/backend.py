@@ -11,7 +11,7 @@ import shutil
 # from scipy.io import wavfile
 app = Flask(__name__)
 CORS(app)
-pipeline_dir = os.path.dirname(os.path.abspath(__file__))+'\\..\\demo_pipeline\\'
+pipeline_dir = os.path.dirname(os.path.abspath(__file__))+'\\demo_pipeline\\'
 
 audio_dir = pipeline_dir+'audios_demo\\'
 result_dir = pipeline_dir+'report_outputs\\'
