@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import os,shutil
-from subprocess import call
+import os
+import shutil
 # import urllib
 # import wave
 # import base64
@@ -11,80 +11,54 @@ from subprocess import call
 # from scipy.io import wavfile
 app = Flask(__name__)
 CORS(app)
+pipeline_dir = os.path.dirname(os.path.abspath(__file__))+'\\..\\demo_pipeline\\'
 
-audio_path=os.path.dirname(os.path.abspath(__file__))+'\\demo_audio\\'
-result_path = '.\\'
+audio_dir = pipeline_dir+'audios_demo\\'
+result_dir = pipeline_dir+'report_outputs\\'
+
+thres = 0
+
 
 @app.route('/')
 def hello_world():
-    return 'Hello World! \nThis is senior demo backend!'
+    return 'Hello World! This is senior demo backend!'
+
 
 @app.route('/speaker')
 def getSpeaker():
-    with open(result_path+'speaker.txt', "r", encoding="utf-8") as f:
+    os.system("cut -d ' ' -f 1 "+pipeline_dir+'data\\test_gowajee\\spk2utt > '+result_dir+'speaker.txt')
+    with open(result_dir+'speaker.txt', "r", encoding="utf-8") as f:
         data = f.read().splitlines()
     return jsonify({'spkList': data})
+
 
 @app.route('/savewav', methods=['POST'])
 def saveWave():
     req_data = request.get_json()
-    blob = req_data['blob']
+    # blob = req_data['blob']
     spk = req_data['speaker']
     source_path = req_data['download_path']
-    # nframes = int(req_data['nframe'])
-    # bytes_blob = base64.b64decode(blob)
-    # array_blob = np.frombuffer(bytes_blob, dtype=np.float64)  
-    # name_tmp = spk+'_tmp.wav'
-    utt_count = max([ int(f.split('.')[0].split('_')[1])+1 for f in os.listdir(audio_path) if spk in f ]+[0])
-    name = ('%s_%06d.wav' % (spk,utt_count))
-    shutil.move(source_path+'\\'+spk + '_save_file.wav', audio_path+name)
-    # librosa.output.write_wav(name, array_blob, 16000)
 
-    # fout = open(name_tmp, "bx")
-    # fout.write(bytes_blob)
-    # fout.close()
-    # audioFile = wave.open(name_tmp, 'r')
-    # n_frames = audioFile.getnframes()
-    # audioData = audioFile.readframes(n_frames)
-    # originalRate = audioFile.getframerate()
-    # af = wave.open(name, 'w')
-    # af.setnchannels(1)
-    # af.setparams((1, 2, 16000, n_frames, 'NONE', 'Uncompressed'))
-    # converted = audioop.ratecv(audioData, 2, 1, originalRate, 16000, None)
-    # af.writeframes(converted[0])
-    # af.close()
-    # audioFile.close()
+    shutil.move(source_path+'\\'+spk + '_save_file.wav', audio_dir+'demo\\demo.wav')
 
-    # fout = open(spk+'.wav', "bx")
-    # fout.write(bytes_blob)
-    # fout.close()
+    return jsonify({'log': 'Audio is saved.'})
 
-    # nchannels = 1
-    # sampwidth = 1
-    # framerate = 16000
-
-    # audio = wave.open(name, 'wb')
-    # audio.setnchannels(nchannels)
-    # audio.setsampwidth(sampwidth)
-    # audio.setframerate(framerate)
-    # audio.setnframes(nframes)
-    # audio.writeframes(bytes_blob)
-
-    # wavfile.write(name,16000,array_blob)
-
-    return jsonify({'log': 'Audio is saved as '+name+'.'})
 
 @app.route('/process')
 def process():
-    # process kaldi
-    for i in range(int(50000000)): 
-        if i%10000000==0:print(i)
-    rc = call("./run_demo.sh")
+    os.system(pipeline_dir+"run_demo_pipeline.sh")
     return jsonify({'log': 'ASV process done!'})
 
-@app.route('/result')
+
+@app.route('/result', methods=['POST'])
 def getResult():
-    with open(result_path+'result.txt', "r", encoding="utf-8") as f:
-        line_list = f.read().splitlines()
-    data={ line.split('=')[0]:line.split('=')[1] for line in line_list if '=' in line}
-    return jsonify(data)
+    with open(result_dir+'trials.txt', "r", encoding="utf-8") as f:
+        line = f.read().splitlines()[0]
+    isTarget = line.split(' ')[2] > thres
+    if isTarget:
+        req_data = request.get_json()
+        spk = req_data['speaker']
+        utt_count = max([ int(f.split('.')[0].split('_')[1])+1 for f in os.listdir(audio_dir+'save\\') if spk in f ]+[0])
+        name = ('%s_%06d.wav' % (spk,utt_count))
+        shutil.move(audio_dir+'demo\\demo.wav',audio_dir+'save\\'+name)
+    return jsonify({'isTarget': isTarget})

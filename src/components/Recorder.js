@@ -13,7 +13,6 @@ class Recorder extends React.Component {
       isSpeakerSet: false,
       isDone: false,
       record: false,
-      isASR: true,
       isTarget: true,
       pool: [],
       processlog: '',
@@ -63,10 +62,15 @@ class Recorder extends React.Component {
   }
 
   nextResultHandler = () => {
-    axios.get('/result')
-      .then(res => {
+    axios({
+      baseURL: "http://localhost:5000/",
+      url: '/result',
+      method: 'POST',
+      data: {
+        speaker: this.speaker,
+      }
+    }).then(res => {
         this.setState({
-          isASR: (res.data.isASR === '1') ? true : false,
           isTarget: (res.data.isTarget === '1') ? true : false,
           state: this.state.state + 1,
         })
@@ -84,7 +88,6 @@ class Recorder extends React.Component {
           isSpeakerSet: false,
           isDone: false,
           record: false,
-          isASR: true,
           isTarget: true,
           processlog: '',
           waitlog: ''
@@ -197,14 +200,12 @@ class Recorder extends React.Component {
         </div>
       );
     } else if (this.state.state === 4) {
-      var resultASR = (this.state.isASR === true) ? 'yes' : 'no';
       var resultTarget = (this.state.isTarget === true) ? 'yes' : 'no';
 
       return (
         <div>
           <h3>Result</h3>
           Target: {resultTarget}<br />
-          ASR 2018 student: {resultASR}<br />
           <div className="button next" onClick={this.doneHandler} type="button">Done</div>
         </div>
       );
