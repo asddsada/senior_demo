@@ -74,7 +74,7 @@ class Recorder extends React.Component {
       }
     }).then(res => {
         this.setState({
-          isTarget: (res.data.isTarget === '1') ? true : false,
+          isTarget: (res.data.isTarget) ? true : false,
           state: this.state.state + 1,
         })
       })
