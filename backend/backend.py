@@ -11,10 +11,10 @@ import shutil
 # from scipy.io import wavfile
 app = Flask(__name__)
 CORS(app)
-pipeline_dir = os.path.dirname(os.path.abspath(__file__))+'\\demo_pipeline\\'
+pipeline_dir = os.path.dirname(os.path.abspath(__file__))+'/demo_pipeline/'
 
-audio_dir = pipeline_dir+'audios_demo\\'
-result_dir = pipeline_dir+'report_outputs\\'
+audio_dir = pipeline_dir+'audios_demo/'
+result_dir = pipeline_dir+'report_outputs/'
 
 thres = 0
 
@@ -26,7 +26,7 @@ def hello_world():
 
 @app.route('/speaker')
 def getSpeaker():
-    os.system("cut -d ' ' -f 1 "+pipeline_dir+'data\\test_gowajee\\spk2utt > '+result_dir+'speaker.txt')
+    os.system("cut -d ' ' -f 1 "+pipeline_dir+'data/test_gowajee/spk2utt > '+result_dir+'speaker.txt')
     with open(result_dir+'speaker.txt', "r", encoding="utf-8") as f:
         data = f.read().splitlines()
     return jsonify({'spkList': data})
@@ -39,14 +39,17 @@ def saveWave():
     spk = req_data['speaker']
     source_path = req_data['download_path']
 
-    shutil.move(source_path+'\\'+spk + '_save_file.wav', audio_dir+'demo\\demo.wav')
+    shutil.move(source_path+'/'+spk + '_save_file.wav', audio_dir+'demo/demo_'+spk+'.wav')
 
     return jsonify({'log': 'Audio is saved.'})
 
 
-@app.route('/process')
+@app.route('/process', methods=['POST'])
 def process():
-    os.system(pipeline_dir+"run_demo_pipeline.sh")
+    req_data = request.get_json()
+    spk = req_data['speaker']
+    # print(pipeline_dir+"run_demo_pipeline.sh --target-spk "+spk)
+    os.system("cd "+pipeline_dir+"; ./run_demo_pipeline.sh --target-spk "+spk)
     return jsonify({'log': 'ASV process done!'})
 
 
@@ -54,11 +57,13 @@ def process():
 def getResult():
     with open(result_dir+'trials.txt', "r", encoding="utf-8") as f:
         line = f.read().splitlines()[0]
-    isTarget = line.split(' ')[2] > thres
+    isTarget = float(line.split(' ')[2]) > thres
+    req_data = request.get_json()
+    spk = req_data['speaker']
     if isTarget:
-        req_data = request.get_json()
-        spk = req_data['speaker']
-        utt_count = max([ int(f.split('.')[0].split('_')[1])+1 for f in os.listdir(audio_dir+'save\\') if spk in f ]+[0])
+        utt_count = max([ int(f.split('.')[0].split('_')[1])+1 for f in os.listdir(audio_dir+'save/') if spk in f ]+[0])
         name = ('%s_%06d.wav' % (spk,utt_count))
-        shutil.move(audio_dir+'demo\\demo.wav',audio_dir+'save\\'+name)
+        shutil.move(audio_dir+'demo/demo_'+spk+'.wav',audio_dir+'save/'+name)
+    else:
+        os.remove(audio_dir+'demo/demo_'+spk+'.wav')
     return jsonify({'isTarget': isTarget})

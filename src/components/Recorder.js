@@ -23,8 +23,11 @@ class Recorder extends React.Component {
 
   componentDidMount() {
     // backend: get speaker list using python
-    axios.get('/speaker')
-      .then(res => {
+    axios({
+      baseURL: "http://localhost:5000/",
+      url: '/speaker',
+      method: 'GET'
+    }).then(res => {
         const spkList = res.data.spkList;
         this.setState({
           pool: spkList
@@ -79,8 +82,11 @@ class Recorder extends React.Component {
 
   doneHandler = () => {
     this.speaker = ''
-    axios.get('/speaker')
-      .then(res => {
+    axios({
+      baseURL: "http://localhost:5000/",
+      url: '/speaker',
+      method: 'GET'
+    }).then(res => {
         const spkList = res.data.spkList;
         this.setState({
           pool: spkList,
@@ -105,7 +111,7 @@ class Recorder extends React.Component {
     var reader = new FileReader();
     var speaker_tmp = this.speaker;
     var nframe = ((recordedBlob.stopTime - recordedBlob.startTime) * 0.001 * recordedBlob.options.sampleRate);
-    var download_path = 'C:\\Users\\USER\\Downloads';
+    var download_path = '/home/asddsada/Downloads';
     saveAs(recordedBlob.blob, speaker_tmp + '_save_file.wav');
 
     const callbackback = (res) => {
@@ -142,8 +148,14 @@ class Recorder extends React.Component {
   }
 
   getProcess = () => {
-    axios.get('/process')
-      .then(res => {
+    axios({
+      baseURL: "http://localhost:5000/",
+      url: '/process',
+      method: 'POST',
+      data: {
+	 speaker: this.speaker
+      }
+    }).then(res => {
         this.setState({
           waitlog: res.data.log,
           isDone: true,

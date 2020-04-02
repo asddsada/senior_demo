@@ -22,6 +22,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-backend/result.txt
-backend/speaker.txt
 backend/demo_pipeline/
+*.tar.gz
+backend/__pycache__/
