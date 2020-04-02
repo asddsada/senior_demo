@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import shutil
+import base64
 # import urllib
 # import wave
 # import base64
@@ -35,11 +36,17 @@ def getSpeaker():
 @app.route('/savewav', methods=['POST'])
 def saveWave():
     req_data = request.get_json()
-    # blob = req_data['blob']
+    blob = req_data['blob']
     spk = req_data['speaker']
     source_path = req_data['download_path']
 
-    shutil.move(source_path+'/'+spk + '_save_file.wav', audio_dir+'demo/demo_'+spk+'.wav')
+    bytes_blob = base64.b64decode(blob)
+
+    fout = open(audio_dir+'demo/roc_'+spk+'.wav', "bx")
+    fout.write(bytes_blob)
+    fout.close()
+
+    # shutil.move(source_path+'/'+spk + '_save_file.wav', audio_dir+'demo/demo_'+spk+'.wav')
 
     return jsonify({'log': 'Audio is saved.'})
 
@@ -60,10 +67,11 @@ def getResult():
     isTarget = float(line.split(' ')[2]) > thres
     req_data = request.get_json()
     spk = req_data['speaker']
+    print(float(line.split(' ')[2]),isTarget)
     if isTarget:
-        utt_count = max([ int(f.split('.')[0].split('_')[1])+1 for f in os.listdir(audio_dir+'save/') if spk in f ]+[0])
+        utt_count = max([ int(f.split('.')[0].split('_')[1])+1 for f in os.listdir(pipeline_dir+'audios_save/save/') if spk in f ]+[0])
         name = ('%s_%06d.wav' % (spk,utt_count))
-        shutil.move(audio_dir+'demo/demo_'+spk+'.wav',audio_dir+'save/'+name)
+        shutil.move(audio_dir+'demo/demo_'+spk+'.wav',pipeline_dir+'audios_save/save/'+name)
     else:
         os.remove(audio_dir+'demo/demo_'+spk+'.wav')
     return jsonify({'isTarget': isTarget})
