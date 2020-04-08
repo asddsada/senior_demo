@@ -27,7 +27,7 @@ def hello_world():
 
 @app.route('/speaker')
 def getSpeaker():
-    os.system("cut -d ' ' -f 1 "+pipeline_dir+'data/test_gowajee/spk2utt > '+result_dir+'speaker.txt')
+    # os.system("cut -d ' ' -f 1 "+pipeline_dir+'data/test_gowajee/spk2utt > '+result_dir+'speaker.txt')
     with open(result_dir+'speaker.txt', "r", encoding="utf-8") as f:
         data = f.read().splitlines()
     return jsonify({'spkList': data})
@@ -36,17 +36,17 @@ def getSpeaker():
 @app.route('/savewav', methods=['POST'])
 def saveWave():
     req_data = request.get_json()
-    blob = req_data['blob']
+    # blob = req_data['blob']
     spk = req_data['speaker']
     source_path = req_data['download_path']
 
-    bytes_blob = base64.b64decode(blob)
+    # bytes_blob = base64.b64decode(blob)
 
-    fout = open(audio_dir+'demo/roc_'+spk+'.wav', "bx")
-    fout.write(bytes_blob)
-    fout.close()
+    # fout = open(audio_dir+'demo/roc_'+spk+'.wav', "bx")
+    # fout.write(bytes_blob)
+    # fout.close()
 
-    # shutil.move(source_path+'/'+spk + '_save_file.wav', audio_dir+'demo/demo_'+spk+'.wav')
+    os.remove(source_path+'/'+spk + '_save_file.wav')
 
     return jsonify({'log': 'Audio is saved.'})
 
@@ -55,7 +55,7 @@ def saveUpload():
     req_data = request.get_json()
     # blob = req_data['blob']
     spk = req_data['speaker']
-    source_path = req_data['download_path']
+    source_path = 'C:\\Users\\USER\\Downloads'
 
     # bytes_blob = base64.b64decode(blob)
 
@@ -70,10 +70,10 @@ def saveUpload():
 
 @app.route('/process', methods=['POST'])
 def process():
-    req_data = request.get_json()
-    spk = req_data['speaker']
+    # req_data = request.get_json()
+    # spk = req_data['speaker']
     # print(pipeline_dir+"run_demo_pipeline.sh --target-spk "+spk)
-    os.system("cd "+pipeline_dir+"; ./run_demo_pipeline.sh --target-spk "+spk)
+    # os.system("cd "+pipeline_dir+"; ./run_demo_pipeline.sh --target-spk "+spk)
     return jsonify({'log': 'ASV process done!'})
 
 
@@ -82,13 +82,13 @@ def getResult():
     with open(result_dir+'trials.txt', "r", encoding="utf-8") as f:
         line = f.read().splitlines()[0]
     isTarget = float(line.split(' ')[2]) > thres
-    req_data = request.get_json()
-    spk = req_data['speaker']
-    print(float(line.split(' ')[2]),isTarget)
-    if isTarget:
-        utt_count = max([ int(f.split('.')[0].split('_')[1])+1 for f in os.listdir(pipeline_dir+'audios_save/save/') if spk in f ]+[0])
-        name = ('%s_%06d.wav' % (spk,utt_count))
-        shutil.move(audio_dir+'demo/demo_'+spk+'.wav',pipeline_dir+'audios_save/save/'+name)
-    else:
-        os.remove(audio_dir+'demo/demo_'+spk+'.wav')
+    # req_data = request.get_json()
+    # spk = req_data['speaker']
+    # print(float(line.split(' ')[2]),isTarget)
+    # if isTarget:
+    #     utt_count = max([ int(f.split('.')[0].split('_')[1])+1 for f in os.listdir(pipeline_dir+'audios_save/save/') if spk in f ]+[0])
+    #     name = ('%s_%06d.wav' % (spk,utt_count))
+    #     shutil.move(audio_dir+'demo/demo_'+spk+'.wav',pipeline_dir+'audios_save/save/'+name)
+    # else:
+    #     os.remove(audio_dir+'demo/demo_'+spk+'.wav')
     return jsonify({'isTarget': isTarget})
