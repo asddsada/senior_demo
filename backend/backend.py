@@ -3,13 +3,7 @@ from flask_cors import CORS
 import os
 import shutil
 import base64
-# import urllib
-# import wave
-# import base64
-# import audioop
-# import numpy as np
-# import librosa
-# from scipy.io import wavfile
+
 app = Flask(__name__)
 CORS(app)
 pipeline_dir = os.path.dirname(os.path.abspath(__file__))+'/demo_pipeline/'
