@@ -250,13 +250,15 @@ class Recorder extends React.Component {
           );
         }
       } else {
+        var uploadEnable = (this.state.selectedFile) ? '' : 'disable';
         return (
           <div>
             <h3>Upload to verify</h3>
             <input type="file" name="file" onChange={this.onUploadChangeHandler} />
+            <p>Recommended wav file with sampling rate 16 kHz and 16 bit depth</p>
             <p>speaker: {this.speaker}</p>
             <p>Audio choice : {this.audioChoice}</p>
-            <div className={"button next " + nextEnable} onClick={this.nextUpload} type="button">Next</div>
+            <div className={"button next " + uploadEnable} onClick={this.nextUpload} type="button">Upload</div>
           </div>
         );
       }
