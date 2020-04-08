@@ -38,7 +38,7 @@ def saveWave():
     req_data = request.get_json()
     blob = req_data['blob']
     spk = req_data['speaker']
-    source_path = req_data['download_path']
+    # source_path = req_data['download_path']
 
     bytes_blob = base64.b64decode(blob)
 
@@ -48,6 +48,23 @@ def saveWave():
     # shutil.move(source_path+'/'+spk + '_save_file.wav', audio_dir+'demo/roc_'+spk+'.wav')
 
     return jsonify({'log': 'Audio is saved.'})
+
+@app.route('/saveupload', methods=['POST'])
+def saveUpload():
+    req_data = request.get_json()
+    blob = req_data['blob']
+    spk = req_data['speaker']
+    # source_path = req_data['download_path']
+
+    bytes_blob = base64.b64decode(blob)
+
+    fout = open(audio_dir+'demo/roc_'+spk+'.wav', "bx")
+    fout.write(bytes_blob)
+    fout.close()
+
+    # shutil.move(source_path+'/'+spk + '_save_file.wav', audio_dir+'demo/roc_'+spk+'.wav')
+
+    return jsonify({'log': 'Audio is upload.'})
 
 
 @app.route('/process', methods=['POST'])
