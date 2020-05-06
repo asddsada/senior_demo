@@ -120,8 +120,8 @@ class Recorder extends React.Component {
   onStop = (recordedBlob) => {
     var reader = new FileReader();
     var speaker_tmp = this.speaker;
-    var download_path = '/home/asddsada/Downloads';
-    saveAs(recordedBlob.blob, speaker_tmp + '_save_file.wav');
+    // var download_path = '/home/asddsada/Downloads';
+    // saveAs(recordedBlob.blob, speaker_tmp + '_save_file.wav');
 
     const callbackback = (res) => {
       this.setState({
@@ -143,7 +143,6 @@ class Recorder extends React.Component {
         data: {
           blob: b64,
           speaker: speaker_tmp,
-          download_path: download_path
         }
       }).then(callback);
     };
@@ -174,30 +173,38 @@ class Recorder extends React.Component {
   }
 
   nextUpload = () => {
-    // const data = new FormData()
-    // data.append('file', this.state.selectedFile)
-    console.log(this.state.selectedFile);
-    var download_path = '/home/asddsada/Downloads';
-    saveAs(this.state.selectedFile, this.speaker + '_save_file.wav');
+    // console.log(this.state.selectedFile);
+    var reader = new FileReader();
+    var speaker_tmp = this.speaker;
+    // var download_path = '/home/asddsada/Downloads';
+    // saveAs(recordedBlob.blob, speaker_tmp + '_save_file.wav');
 
-    const callback = (res) => {
+    const callbackback = (res) => {
       this.setState({
-        state: this.state.state + 2,
-        processlog: res.data.log,
+        state: this.state.state + 2
+	processlog: res,
         waitlog: 'Start processing ASV in kaldi...'
       })
       this.getProcess()
     }
 
-    axios({
-      baseURL: "http://localhost:5000/",
-      url: '/saveupload',
-      method: 'POST',
-      data: {
-        speaker: this.speaker,
-        download_path: download_path
+    reader.onload = function () {
+      var b64 = reader.result.replace(/^data:.+;base64,/, '');
+      const callback = (res) => {
+        callbackback(res.data.log)
       }
-    }).then(callback);
+      axios({
+        baseURL: "http://localhost:5000/",
+        url: '/savewav',
+        method: 'POST',
+        data: {
+          blob: b64,
+          speaker: speaker_tmp,
+        }
+      }).then(callback);
+    };
+
+    reader.readAsDataURL(this.state.selectedFile);
   }
 
   body = () => {
