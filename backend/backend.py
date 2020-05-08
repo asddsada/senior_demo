@@ -33,11 +33,11 @@ def saveWave():
     req_data = request.get_json()
     blob = req_data['blob']
     spk = req_data['speaker']
-    source_path = req_data['download_path']
+    # source_path = req_data['download_path']
 
     bytes_blob = base64.b64decode(blob)
 
-    fout = open(audio_dir+'demo/roc_'+spk+'.wav', "bx")
+    fout = open(audio_dir+'demo/demo_'+spk+'.wav', "bx")
     fout.write(bytes_blob)
     fout.close()
 
@@ -55,7 +55,7 @@ def saveUpload():
 
     bytes_blob = base64.b64decode(blob)
 
-    fout = open(audio_dir+'demo/roc_'+spk+'.wav', "bx")
+    fout = open(audio_dir+'demo/demo_'+spk+'.wav', "bx")
     fout.write(bytes_blob)
     fout.close()
 
@@ -77,9 +77,7 @@ def process():
 def getResult():
     with open(result_dir+'trials.txt', "r", encoding="utf-8") as f:
         line = f.read().splitlines()
-    prob = np.array([l.split()[2] for l in line])
-
-
+    prob = np.array([l.split()[2] for l in line]).astype(np.float)
     with open(result_dir+'result.txt', "r", encoding="utf-8") as f:
         line = f.read().splitlines()[0]
     
@@ -88,13 +86,14 @@ def getResult():
     isTarget = r > thres
     req_data = request.get_json()
     spk = req_data['speaker']
-    print(float(line.split(' ')[2]), isTarget)
+    print('Normalize:',r,prob.mean(), isTarget)
     if isTarget:
-        utt_count = max([int(f.split('.')[0].split('_')[
-                        1])+1 for f in os.listdir(pipeline_dir+'audios_save/save/') if spk in f]+[0])
+        utt_count = max([int(f.split('.')[0].split('_')[1])+1 
+            for f in os.listdir(pipeline_dir+'audios_save/save/') 
+            if spk in f]+[0])
         name = ('%s_%06d.wav' % (spk, utt_count))
         shutil.move(audio_dir+'demo/demo_'+spk+'.wav',
                     pipeline_dir+'audios_save/save/'+name)
     else:
         os.remove(audio_dir+'demo/demo_'+spk+'.wav')
-    return jsonify({'isTarget': isTarget})
+    return jsonify({'isTarget': int(isTarget)})

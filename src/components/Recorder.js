@@ -2,7 +2,7 @@ import React from "react";
 import { ReactMic } from '@cleandersonlobo/react-mic';
 import './../styles/Recorder.css';
 import axios from 'axios';
-import { saveAs } from 'file-saver';
+// import { saveAs } from 'file-saver';
 // import API from "./../utils/API";
 
 class Recorder extends React.Component {
@@ -83,7 +83,7 @@ class Recorder extends React.Component {
       }
     }).then(res => {
       this.setState({
-        isTarget: (res.data.isTarget) ? true : false,
+        isTarget: res.data.isTarget,
         state: this.state.state + 1,
       })
     })
@@ -181,7 +181,7 @@ class Recorder extends React.Component {
 
     const callbackback = (res) => {
       this.setState({
-        state: this.state.state + 2
+        state: this.state.state + 2,
 	processlog: res,
         waitlog: 'Start processing ASV in kaldi...'
       })
@@ -240,7 +240,6 @@ class Recorder extends React.Component {
             <div>
               <h3>Record to verify</h3>
               <div className="button record" onClick={this.startRecordingHandler} type="button">Start</div>
-              <input type="file" name="file" onChange={this.onChangeHandler} />
               <p>speaker: {this.speaker}</p>
               <p>Audio choice : {this.audioChoice}</p>
             </div>
@@ -250,7 +249,6 @@ class Recorder extends React.Component {
             <div>
               <h3>Record to verify</h3>
               <div className="button record active" onClick={this.stopRecordingHandler} type="button">Stop</div>
-              <input type="file" name="file" onChange={this.onChangeHandler} />
               <p>speaker: {this.speaker}</p>
               <p>Audio choice : {this.audioChoice}</p>
             </div>
@@ -280,7 +278,7 @@ class Recorder extends React.Component {
         </div>
       );
     } else if (this.state.state === 4) {
-      var resultTarget = (this.state.isTarget === true) ? 'yes' : 'no';
+      var resultTarget = (this.state.isTarget === 1) ? 'yes' : 'no';
 
       return (
         <div>
