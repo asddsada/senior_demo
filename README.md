@@ -9,7 +9,7 @@ The project is partial fulfillment of the requirements for the degree of Bachelo
 - NPM: 6.13.4
 
 ## Setup
-1. Clone pipeline for Auto Speaker Verification system can be found at https://github.com/asddsada/demo_pipeline .
+1. Clone pipeline for Auto Speaker Verification system which can be found at https://github.com/asddsada/demo_pipeline .
 2. Move clone directory to `backend/demo_pipeline` or edit config in `backend.py`. 
 3. NPM build require.
 
